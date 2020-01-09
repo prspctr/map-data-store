@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 flask = "*"
 flask-restful = "*"
+py2neo = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.7"
