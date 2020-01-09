@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 
-from app import add_room
+from app import add_room, add_connection
 
 
 app = Flask(__name__)
@@ -34,11 +34,33 @@ class Room(Resource):
     def post(self):
         body = Room.body_parser.parse_args()
         exits = Room.exits_parser.parse_args(req=Room.body_parser)
-        add_room(exits, **body)
-        return body
+        add_room(**body)
+        return {"msg": f"""Room {body.get("id", None)} successfully added!"""}
+
+
+class RoomConnection(Resource):
+    body_parser = reqparse.RequestParser()
+    body_parser.add_argument("originId", type=int, required=True,
+                             help="Missing Id for origin Room")
+    body_parser.add_argument("destinationId", type=int, required=True,
+                             help="Missing Id for destination Room")
+    body_parser.add_argument("direction", type=str, required=True,
+                             help="Missing direction for the connection")
+
+    def post(self):
+        body = RoomConnection.body_parser.parse_args()
+
+        room_1_id = body.get("originId", None)
+        room_2_id = body.get("destinationId", None)
+        direction = body.get("direction", None)
+
+        add_connection(room_1_id, room_2_id, direction)
+
+        return {"msg": f"""Room {room_1_id} successfully connected ({direction}) to Room {room_2_id}!"""}
 
 
 api.add_resource(Room, "/rooms")
+api.add_resource(RoomConnection, "/connections")
 
 # app.run(port=5000, debug=True)
 app.run(port=5000)
