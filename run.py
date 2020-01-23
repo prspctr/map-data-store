@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 
-from app import add_room, add_connection
+from app import add_room, add_connection, getRoomById
 
 
 app = Flask(__name__)
@@ -36,6 +36,11 @@ class Room(Resource):
         exits = Room.exits_parser.parse_args(req=Room.body_parser)
         add_room(**body)
         return {"msg": f"""Room {body.get("id", None)} successfully added!"""}
+
+    def get(self):
+        body = Room.body_parser.parse_args()
+        room_id = dict(getRoomById(body["id"]))
+        return room_id
 
 
 class RoomConnection(Resource):
